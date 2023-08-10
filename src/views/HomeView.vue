@@ -7,6 +7,7 @@
       |
       <router-link :to="{ name: 'login' }">Login</router-link>
     </nav>
+    <h1>RESTAURANTS</h1>
     <div class="main">
       <div
         class="card"
@@ -52,7 +53,6 @@ export default {
         method: "get",
         url: `${this.apiUrl}/restaurants?populate=*`,
       });
-      console.log(response);
       this.restaurants = response.data.data;
     },
   },
@@ -66,22 +66,37 @@ export default {
 .main {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
+  gap: 50px;
+}
+
+nav {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+h1 {
+  margin-bottom: 30px;
 }
 .card {
   display: flex;
   flex-direction: column;
-  border: 1px solid red;
-  height: 270px;
+  border: 1px solid #ccc;
+  height: 300px;
   width: 350px;
   gap: 10px;
+  overflow: hidden;
+  padding: 10px;
+  border-radius: 8px;
 }
 
 .card:hover {
   cursor: pointer;
+  border: 1.5px solid black;
 }
 .img-container {
   height: 70%;
-  /* border: 1px solid red; */
+  margin-bottom: 5px;
 }
 
 img {
@@ -95,6 +110,7 @@ img {
   flex-direction: column;
   gap: 10px;
   align-items: start;
+  text-align: start;
 }
 
 .text-container * {

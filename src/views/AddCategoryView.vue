@@ -1,7 +1,7 @@
 <template>
-  <div class="add-category">
+  <div>
     <BackButton />
-    add category
+    <div class="add-category">add category</div>
   </div>
 </template>
 

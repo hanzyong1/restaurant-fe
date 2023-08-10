@@ -8,16 +8,49 @@
         <a class="next" @click="next">&#10095;</a>
       </div>
       <div class="main">
-        <p>{{ name }}</p>
-        <p>{{ description }}</p>
-        <p>{{ address }}</p>
-        <p>{{ phone }}</p>
-        <p>{{ website }}</p>
-        <div v-for="category in categories" :key="category.id">
-          {{ category.attributes.name }}
+        <div class="main-left">
+          <div class="title">
+            Restaurant Name:
+            <div class="text">{{ name }}</div>
+          </div>
+          <div class="title">
+            Description:
+            <div class="text">{{ description }}</div>
+          </div>
+          <div class="title">
+            Address:
+            <div class="text">{{ address }}</div>
+          </div>
         </div>
-        <div v-for="closingDay in closingDays" :key="closingDay.id">
-          {{ closingDay.attributes.day }}
+        <div class="main-right">
+          <div class="title">
+            Phone Number:
+            <div class="text">
+              {{ phone }}
+            </div>
+          </div>
+          <div class="title">
+            Website:
+            <div class="text">
+              {{ website }}
+            </div>
+          </div>
+          <div class="title">
+            Cuisine:
+            <div class="text" v-for="category in categories" :key="category.id">
+              {{ category.attributes.name }}
+            </div>
+          </div>
+          <div class="title">
+            Closed on:
+            <div
+              class="text"
+              v-for="closingDay in closingDays"
+              :key="closingDay.id"
+            >
+              {{ closingDay.attributes.day }}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -78,7 +111,6 @@ export default {
       method: "get",
       url: `${this.apiUrl}/restaurants/${this.restaurantId}?populate=*`,
     });
-    console.log(response);
 
     this.name = response.data.data.attributes.name;
     this.description = response.data.data.attributes.description;
@@ -99,6 +131,8 @@ export default {
 
 <style scoped>
 .restaurant {
+  width: 90%;
+  margin: auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -107,6 +141,7 @@ export default {
 
 .img-container {
   position: relative;
+  margin-bottom: 50px;
 }
 
 .img-container img {
@@ -125,7 +160,7 @@ export default {
   width: auto;
   margin-top: -22px;
   padding: 16px;
-  color: white;
+  color: black;
   font-weight: bold;
   font-size: 18px;
   transition: 0.6s ease;
@@ -146,5 +181,35 @@ export default {
 .prev:hover,
 .next:hover {
   background-color: rgba(0, 0, 0, 0.8);
+}
+
+.main {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.main-left,
+.main-right {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  flex: 1;
+}
+
+.main-left {
+  border-right: 0.5px solid #ccc;
+}
+
+.title {
+  font-size: large;
+  margin: 10px;
+}
+
+.text {
+  margin: 10px;
+  font-size: larger;
+  font-weight: bold;
 }
 </style>
