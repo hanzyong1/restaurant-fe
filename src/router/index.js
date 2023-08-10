@@ -4,6 +4,7 @@ import HomeView from "../views/HomeView.vue";
 import AddCategoryView from "../views/AddCategoryView.vue";
 import AddRestaurantView from "../views/AddRestaurantView.vue";
 import LoginView from "../views/LoginView.vue";
+import RestaurantView from "../views/RestaurantView.vue";
 
 Vue.use(VueRouter);
 
@@ -27,6 +28,11 @@ const routes = [
     path: "/login",
     name: "login",
     component: LoginView,
+  },
+  {
+    path: "/restaurant/:id",
+    name: "restaurant",
+    component: RestaurantView,
   },
 ];
 
