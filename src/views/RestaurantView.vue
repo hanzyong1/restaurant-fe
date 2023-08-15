@@ -1,9 +1,13 @@
 <template>
-  <div>
+  <div class="page">
     <BackButton />
     <div class="restaurant">
       <div class="img-container">
-        <img :src="imgUrl[currentIndex]" />
+        <img
+          v-if="imgUrl[currentIndex] == null"
+          src="../assets/Image_not_available.png"
+        />
+        <img v-else :src="imgUrl[currentIndex]" />
         <a class="prev" @click="previous">&#10094;</a>
         <a class="next" @click="next">&#10095;</a>
       </div>
@@ -38,7 +42,7 @@
           <div class="title">
             Cuisine:
             <div class="text" v-for="category in categories" :key="category.id">
-              {{ category.attributes.name }}
+              {{ category.attributes.name | capitalize }}
             </div>
           </div>
           <div class="title">
@@ -48,7 +52,7 @@
               v-for="closingDay in closingDays"
               :key="closingDay.id"
             >
-              {{ closingDay.attributes.day }}
+              {{ closingDay.attributes.day | capitalize }}
             </div>
           </div>
         </div>
@@ -69,7 +73,7 @@ export default {
       baseUrl: process.env.VUE_APP_BASE_URL,
       restaurantId: this.$route.params.id,
       name: "",
-      description: "",
+      description: "N/A",
       address: "",
       phone: "",
       website: "",
@@ -105,31 +109,41 @@ export default {
       clearInterval(this.timer);
       this.startRotation();
     },
+    async getRestaurantData() {
+      try {
+        const response = await axios({
+          method: "get",
+          url: `${this.apiUrl}/restaurants/${this.restaurantId}?populate=*`,
+        });
+        this.name = response.data.data.attributes.name;
+        this.description = response.data.data.attributes.description;
+        this.address = response.data.data.attributes.address;
+        this.phone = response.data.data.attributes.phone;
+        this.website = response.data.data.attributes.website;
+        this.categories = response.data.data.attributes.categories.data;
+        this.closingDays = response.data.data.attributes.closingDays.data;
+        this.menuImg = response.data.data.attributes.menu.data;
+        this.imgUrl = this.menuImg.map((menu) => {
+          return `${this.baseUrl}${menu.attributes.url}`;
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    },
   },
-  async mounted() {
-    const response = await axios({
-      method: "get",
-      url: `${this.apiUrl}/restaurants/${this.restaurantId}?populate=*`,
-    });
-
-    this.name = response.data.data.attributes.name;
-    this.description = response.data.data.attributes.description;
-    this.address = response.data.data.attributes.address;
-    this.phone = response.data.data.attributes.phone;
-    this.website = response.data.data.attributes.website;
-    this.categories = response.data.data.attributes.categories.data;
-    this.closingDays = response.data.data.attributes.closingDays.data;
-    this.menuImg = response.data.data.attributes.menu.data;
-    this.imgUrl = this.menuImg.map((menu) => {
-      return `${this.baseUrl}${menu.attributes.url}`;
-    });
-
+  mounted() {
+    this.getRestaurantData();
     this.startRotation();
   },
 };
 </script>
 
 <style scoped>
+.page {
+  background-color: beige;
+  min-height: 100vh;
+  text-align: left;
+}
 .restaurant {
   width: 90%;
   margin: auto;
@@ -211,5 +225,6 @@ export default {
   margin: 10px;
   font-size: larger;
   font-weight: bold;
+  min-height: 10px;
 }
 </style>

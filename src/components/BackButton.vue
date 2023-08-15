@@ -4,8 +4,6 @@
 
 <style scoped>
 button {
-  display: flex;
-  justify-content: start;
   padding: 5px 10px;
   margin: 20px;
 }

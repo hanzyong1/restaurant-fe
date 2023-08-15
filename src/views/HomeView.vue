@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="page">
     <nav>
       <router-link :to="{ name: 'home' }">Home</router-link> |
       <router-link :to="{ name: 'addCategory' }">Add Category</router-link> |
@@ -9,25 +9,36 @@
     </nav>
     <h1>RESTAURANTS</h1>
     <div class="main">
-      <div
-        class="card"
-        v-for="restaurant in restaurants"
-        v-bind:key="restaurant.id"
-        @click="handleClick(restaurant.id)"
-      >
-        <div class="img-container">
-          <img
-            :src="baseUrl + restaurant.attributes.image.data[0].attributes.url"
-            :alt="restaurant.attributes.image.data[0].attributes.name"
-          />
-        </div>
-        <div class="text-container">
-          <div class="name">
-            {{ restaurant.attributes.name }}
+      <template v-for="restaurant in restaurants">
+        <div
+          class="card"
+          v-bind:key="restaurant.id"
+          @click="handleClick(restaurant.id)"
+        >
+          <div class="img-container">
+            <img
+              v-if="restaurant.attributes.image.data == null"
+              src="../assets/Image_not_available.png"
+              alt="Image not available"
+            />
+            <img
+              v-else
+              :src="
+                baseUrl + restaurant.attributes.image.data[0].attributes.url
+              "
+              :alt="restaurant.attributes.image.data[0].attributes.name"
+            />
           </div>
-          <div class="description">{{ restaurant.attributes.description }}</div>
+          <div class="text-container">
+            <div class="name">
+              {{ restaurant.attributes.name }}
+            </div>
+            <div class="description">
+              {{ restaurant.attributes.description }}
+            </div>
+          </div>
         </div>
-      </div>
+      </template>
     </div>
   </div>
 </template>
@@ -49,11 +60,15 @@ export default {
     },
 
     async getCardData() {
-      const response = await axios({
-        method: "get",
-        url: `${this.apiUrl}/restaurants?populate=*`,
-      });
-      this.restaurants = response.data.data;
+      try {
+        const response = await axios({
+          method: "get",
+          url: `${this.apiUrl}/restaurants?populate=*`,
+        });
+        this.restaurants = response.data.data;
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
   mounted() {
@@ -63,11 +78,17 @@ export default {
 </script>
 
 <style scoped>
+.page {
+  background-color: beige;
+  height: 100%;
+}
+
 .main {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 50px;
+  padding-bottom: 50px;
 }
 
 nav {
@@ -95,7 +116,7 @@ h1 {
   border: 1.5px solid black;
 }
 .img-container {
-  height: 70%;
+  min-height: 70%;
   margin-bottom: 5px;
 }
 
@@ -112,9 +133,7 @@ img {
   align-items: start;
   text-align: start;
 }
-
 .text-container * {
-  /* border: 1px solid red; */
   margin-left: 10px;
 }
 

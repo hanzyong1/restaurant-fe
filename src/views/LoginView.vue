@@ -1,7 +1,7 @@
 <template>
-  <div class="login">
+  <div class="page">
     <BackButton />
-    login / register
+    <div class="login">login / register</div>
   </div>
 </template>
 
@@ -15,3 +15,11 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.page {
+  background-color: white;
+  height: 100vh;
+  text-align: left;
+}
+</style>
