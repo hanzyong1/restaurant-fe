@@ -95,7 +95,7 @@ export default {
 <style scoped>
 .page {
   background-color: white;
-  height: 100vh;
+  height: 100dvh;
   text-align: left;
 }
 

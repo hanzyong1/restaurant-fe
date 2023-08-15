@@ -141,7 +141,7 @@ export default {
 <style scoped>
 .page {
   background-color: beige;
-  min-height: 100vh;
+  min-height: 100dvh;
   text-align: left;
 }
 .restaurant {

@@ -8,6 +8,16 @@
       <router-link :to="{ name: 'login' }">Login</router-link>
     </nav>
     <h1>RESTAURANTS</h1>
+    <div class="category-buttons">
+      <button @click="handleCategory('all')">All</button>
+      <button
+        v-for="category in categories"
+        :key="category.id"
+        @click="handleCategory(category.attributes.name)"
+      >
+        {{ category.attributes.name | capitalize }}
+      </button>
+    </div>
     <div class="main">
       <template v-for="restaurant in restaurants">
         <div
@@ -52,11 +62,36 @@ export default {
       apiUrl: process.env.VUE_APP_API_URL,
       baseUrl: process.env.VUE_APP_BASE_URL,
       restaurants: [],
+      categories: [],
     };
   },
   methods: {
     handleClick(value) {
       this.$router.push({ name: "restaurant", params: { id: value } });
+    },
+
+    async handleCategory(category) {
+      if (category == "all") {
+        this.getCardData();
+      } else {
+        const response = await axios({
+          method: "get",
+          url: `${this.apiUrl}/restaurants?filters[categories][name][$eqi]=${category}&populate=*`,
+        });
+        this.restaurants = response.data.data;
+      }
+    },
+
+    async getCategoryData() {
+      try {
+        const response = await axios({
+          method: "get",
+          url: `${this.apiUrl}/categories?populate[0]=name`,
+        });
+        this.categories = response.data.data;
+      } catch (error) {
+        console.log(error);
+      }
     },
 
     async getCardData() {
@@ -73,6 +108,7 @@ export default {
   },
   mounted() {
     this.getCardData();
+    this.getCategoryData();
   },
 };
 </script>
@@ -80,7 +116,19 @@ export default {
 <style scoped>
 .page {
   background-color: beige;
-  height: 100%;
+  min-height: 100dvh;
+}
+
+.category-buttons {
+  display: flex;
+  justify-content: end;
+  margin: 20px;
+  gap: 10px;
+}
+
+.category-buttons button {
+  padding: 6px 8px;
+  font-weight: bold;
 }
 
 .main {
