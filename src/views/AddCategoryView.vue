@@ -3,7 +3,7 @@
     <BackButton />
     <div class="add-category">
       <h1>Add a Category</h1>
-      <form v-on:submit.prevent="postCategoryData">
+      <form ref="form" v-on:submit.prevent="postCategoryData">
         <label for="newCategory">Category Name: </label>
         <input type="text" id="newCategory" v-model="newCategory" required />
 
@@ -51,7 +51,6 @@ export default {
           method: "get",
           url: `${this.apiUrl}/restaurants?fields[0]=name`,
         });
-
         this.restaurants = response.data.data;
       } catch (error) {
         console.log(error);
@@ -60,7 +59,7 @@ export default {
 
     async postCategoryData() {
       try {
-        await axios({
+        const response = await axios({
           method: "post",
           url: `${this.apiUrl}/categories`,
           data: {
@@ -76,14 +75,14 @@ export default {
             },
           },
         });
+        this.$responseStatus(response.request.status);
       } catch (error) {
         console.log(error);
       }
     },
 
     resetForm() {
-      this.selectedRestaurant = "";
-      this.newCategory = "";
+      this.$refs.form.reset();
     },
   },
   mounted() {

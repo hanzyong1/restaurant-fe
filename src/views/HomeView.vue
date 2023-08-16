@@ -101,6 +101,8 @@ export default {
           url: `${this.apiUrl}/restaurants?populate=*`,
         });
         this.restaurants = response.data.data;
+
+        console.log(response);
       } catch (error) {
         console.log(error);
       }

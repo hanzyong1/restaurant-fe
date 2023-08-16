@@ -1,8 +1,12 @@
 import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
+import $responseStatus from "../plugins/plugin";
 
 Vue.config.productionTip = false;
+
+// Plugin
+Vue.use($responseStatus);
 
 // Filters
 Vue.filter("capitalize", function (string) {

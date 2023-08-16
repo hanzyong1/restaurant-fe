@@ -166,7 +166,7 @@ export default {
           url: `${this.apiUrl}/restaurants`,
           data: fd,
         });
-        console.log(response);
+        this.$responseStatus(response.request.status);
       } catch (error) {
         console.log(error.response.data);
       }
