@@ -124,9 +124,9 @@ export default {
     // display restaurants based on category
     handleCategoryClick(category) {
       this.currentCategory = category;
+      this.currentPage = 1;
 
       if (this.currentCategory == "all") {
-        this.currentPage = 1;
         this.getAllRestaurantsData();
       }
       this.getPageData(this.currentCategory);

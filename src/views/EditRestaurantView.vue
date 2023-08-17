@@ -65,7 +65,7 @@
             <input type="file" id="mainImage" @change="handleMainChange" />
             <div v-if="previewMainImage" class="delete-button-container">
               <img class="preview" :src="this.previewMainImage.url" />
-              <div class="delete-button" @click="deleteMainImage">
+              <div class="delete-image-button" @click="deleteMainImage">
                 <svg-icon type="mdi" :path="path"></svg-icon>
               </div>
             </div>
@@ -90,7 +90,7 @@
               >
                 <img :src="image.url" class="preview" />
                 <div
-                  class="delete-button"
+                  class="delete-image-button"
                   @click="deleteMenuImages(index, image.id)"
                 >
                   <svg-icon type="mdi" :path="path"></svg-icon>
@@ -105,6 +105,9 @@
         <button type="submit">Submit</button>
       </div>
     </form>
+    <button class="delete-button" @click="responseStatusDelete(restaurantId)">
+      DELETE
+    </button>
   </div>
 </template>
 
@@ -113,6 +116,7 @@ import BackButton from "@/components/BackButton.vue";
 import axios from "axios";
 import SvgIcon from "@jamescoyle/vue-icon";
 import { mdiDelete } from "@mdi/js";
+import Swal from "sweetalert2";
 
 export default {
   components: { BackButton, SvgIcon },
@@ -139,6 +143,40 @@ export default {
     };
   },
   methods: {
+    // delete restaurant in backend
+    async deleteRestaurant(id) {
+      try {
+        const response = await axios({
+          method: "delete",
+          url: `${this.apiUrl}/restaurants/${id}`,
+        });
+        if (response.request.status == 200) {
+          Swal.fire("Deleted!", "Your file has been deleted.", "success");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    // sweetalert confirming delete
+    responseStatusDelete(id) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, delete it!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.deleteRestaurant(id);
+          Swal.fire("Deleted!", "Your file has been deleted.", "success");
+          this.$router.push({ name: "home" });
+        }
+      });
+    },
+
     // send delete request to backend
     async deleteFileRequest(id) {
       try {
@@ -401,7 +439,7 @@ p {
   width: 100%;
 }
 
-.delete-button {
+.delete-image-button {
   position: absolute;
   bottom: 0;
   right: 0;
@@ -414,10 +452,21 @@ p {
   justify-content: center;
   align-items: center;
   gap: 50px;
+  margin-bottom: 50px;
 }
 
 button {
   padding: 10px;
   font-weight: bold;
+}
+
+.delete-button {
+  margin: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.delete-button:hover {
+  background-color: red;
 }
 </style>
