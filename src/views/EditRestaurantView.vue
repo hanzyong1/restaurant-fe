@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <BackButton />
-    <h1>Add a New Restaurant</h1>
+    <h1>Edit Restaurant</h1>
     <form ref="form" v-on:submit.prevent="postRestaurantData">
       <div class="add-restaurant">
         <div class="left">
@@ -64,7 +64,7 @@
             <label for="mainImage">Upload Main Image</label>
             <input type="file" id="mainImage" @change="handleMainChange" />
             <div v-if="previewMainImage" class="delete-button-container">
-              <img class="preview" :src="this.previewMainImage" />
+              <img class="preview" :src="this.previewMainImage.url" />
               <div class="delete-button" @click="deleteMainImage">
                 <svg-icon type="mdi" :path="path"></svg-icon>
               </div>
@@ -88,8 +88,11 @@
                 v-for="(image, index) in previewMenuImages"
                 :key="image.id"
               >
-                <img :src="image" class="preview" />
-                <div class="delete-button" @click="deleteMenuImages(index)">
+                <img :src="image.url" class="preview" />
+                <div
+                  class="delete-button"
+                  @click="deleteMenuImages(index, image.id)"
+                >
                   <svg-icon type="mdi" :path="path"></svg-icon>
                 </div>
               </div>
@@ -97,7 +100,6 @@
           </div>
         </div>
       </div>
-
       <div class="buttons">
         <button @click="resetForm">Reset</button>
         <button type="submit">Submit</button>
@@ -119,6 +121,7 @@ export default {
       path: mdiDelete,
       apiUrl: process.env.VUE_APP_API_URL,
       baseUrl: process.env.VUE_APP_BASE_URL,
+      restaurantId: this.$route.params.id,
       name: "",
       description: "",
       address: "",
@@ -130,36 +133,54 @@ export default {
       selectedClosingDays: [],
       uploadedMainImage: null,
       uploadedMenuImages: [],
-      previewMainImage: null,
+      previewMainImage: {},
       previewMenuImages: [],
+      filesToDelete: [],
     };
   },
   methods: {
+    // send delete request to backend
+    async deleteFileRequest(id) {
+      try {
+        await axios({
+          method: "delete",
+          url: `${this.apiUrl}/upload/files/${id}`,
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
     // user clicks delete button for main image
     deleteMainImage() {
+      this.filesToDelete.push(this.previewMainImage.id);
       this.uploadedMainImage = null;
       this.previewMainImage = null;
     },
 
-    // user clicks delete button for menu image
-    deleteMenuImages(index) {
-      this.uploadedMenuImages.splice(index, 1);
+    // user clicks delete button for menu images
+    deleteMenuImages(index, id) {
+      this.filesToDelete.push(id);
       this.previewMenuImages.splice(index, 1);
     },
 
-    // when user uploads files
+    // when user uploads main image
     handleMainChange(event) {
       this.uploadedMainImage = event.target.files[0];
-      this.previewMainImage = URL.createObjectURL(this.uploadedMainImage);
+      this.previewMainImage = {
+        url: URL.createObjectURL(this.uploadedMainImage),
+      };
     },
 
-    // when user uploads files
+    // when user uploads menu images
     handleMenuChange(event) {
       this.uploadedMenuImages.push(event.target.files[0]);
-      this.previewMenuImages.push(URL.createObjectURL(event.target.files[0]));
+      this.previewMenuImages.push({
+        url: URL.createObjectURL(event.target.files[0]),
+      });
     },
 
-    // populate categories available
+    // get category data
     async getCategoryData() {
       try {
         const response = await axios({
@@ -173,7 +194,7 @@ export default {
       }
     },
 
-    // populate days available
+    // get closing days data
     async getDaysData() {
       try {
         const response = await axios({
@@ -187,14 +208,18 @@ export default {
       }
     },
 
-    // reset all input fields
+    // reset form input fields
     resetForm() {
       this.$refs.form.reset();
     },
 
-    // create new restaurant entry in backend
     async postRestaurantData() {
       try {
+        // delete files from backend using file id
+        this.filesToDelete.forEach((file) => {
+          this.deleteFileRequest(file);
+        });
+
         const fd = new FormData();
 
         // main image
@@ -219,9 +244,10 @@ export default {
           })
         );
 
+        // update restaurant info
         const response = await axios({
-          method: "post",
-          url: `${this.apiUrl}/restaurants`,
+          method: "put",
+          url: `${this.apiUrl}/restaurants/${this.restaurantId}`,
           data: fd,
         });
 
@@ -230,10 +256,57 @@ export default {
         console.log(error.response.data);
       }
     },
+
+    // get restaurant data for edit
+    async getRestaurantData() {
+      try {
+        const response = await axios({
+          method: "get",
+          url: `${this.apiUrl}/restaurants/${this.restaurantId}?populate=*`,
+        });
+
+        const data = response.data.data;
+
+        // populate input fields with restaurant info
+        this.name = data.attributes.name;
+        this.description = data.attributes.description;
+        this.address = data.attributes.address;
+        this.phone = data.attributes.phone;
+        this.website = data.attributes.website;
+        data.attributes.categories.data.map((category) => {
+          this.selectedCategories.push(category.id);
+        });
+        data.attributes.closingDays.data.map((day) => {
+          this.selectedClosingDays.push(day.id);
+        });
+
+        // get main id and image
+        if (data.attributes.image.data == null) {
+          this.previewMainImage = null;
+        } else {
+          this.previewMainImage = {
+            id: data.attributes.image.data.id,
+            url: `${this.baseUrl}${data.attributes.image.data.attributes.url}`,
+          };
+        }
+
+        // get menu id and images
+        data.attributes.menu.data.map((menu) => {
+          let obj = {
+            id: menu.id,
+            url: `${this.baseUrl}${menu.attributes.url}`,
+          };
+          this.previewMenuImages.push(obj);
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    },
   },
   mounted() {
     this.getCategoryData();
     this.getDaysData();
+    this.getRestaurantData();
   },
 };
 </script>

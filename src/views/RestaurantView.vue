@@ -57,6 +57,11 @@
           </div>
         </div>
       </div>
+      <div class="edit-button-container">
+        <button class="edit-button" @click="navigateToEdit(restaurantId)">
+          Edit
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -86,6 +91,7 @@ export default {
     };
   },
   methods: {
+    // image slider next button
     next() {
       if (this.currentIndex >= this.imgUrl.length - 1) {
         this.currentIndex = 0;
@@ -94,6 +100,8 @@ export default {
       }
       this.stopRotation();
     },
+
+    // image slider previous button
     previous() {
       if (this.currentIndex <= 0) {
         this.currentIndex = this.imgUrl.length - 1;
@@ -102,33 +110,47 @@ export default {
       }
       this.stopRotation();
     },
+
+    // start auto image slider on mounted
     startRotation() {
       this.timer = setInterval(this.next, 3000);
     },
+
+    // reset image slider timer when buttons clicked
     stopRotation() {
       clearInterval(this.timer);
       this.startRotation();
     },
+
+    // get clicked restaurant data based on id
     async getRestaurantData() {
       try {
         const response = await axios({
           method: "get",
           url: `${this.apiUrl}/restaurants/${this.restaurantId}?populate=*`,
         });
-        this.name = response.data.data.attributes.name;
-        this.description = response.data.data.attributes.description;
-        this.address = response.data.data.attributes.address;
-        this.phone = response.data.data.attributes.phone;
-        this.website = response.data.data.attributes.website;
-        this.categories = response.data.data.attributes.categories.data;
-        this.closingDays = response.data.data.attributes.closingDays.data;
-        this.menuImg = response.data.data.attributes.menu.data;
+
+        const data = response.data.data;
+
+        this.name = data.attributes.name;
+        this.description = data.attributes.description;
+        this.address = data.attributes.address;
+        this.phone = data.attributes.phone;
+        this.website = data.attributes.website;
+        this.categories = data.attributes.categories.data;
+        this.closingDays = data.attributes.closingDays.data;
+        this.menuImg = data.attributes.menu.data;
         this.imgUrl = this.menuImg.map((menu) => {
           return `${this.baseUrl}${menu.attributes.url}`;
         });
       } catch (error) {
         console.log(error);
       }
+    },
+
+    // edit button
+    navigateToEdit(value) {
+      this.$router.push({ name: "editRestaurantView", params: { id: value } });
     },
   },
   mounted() {
@@ -202,6 +224,7 @@ export default {
   width: 100%;
   justify-content: space-around;
   flex-wrap: wrap;
+  margin-bottom: 50px;
 }
 
 .main-left,
@@ -226,5 +249,14 @@ export default {
   font-size: larger;
   font-weight: bold;
   min-height: 10px;
+}
+
+.edit-button-container {
+  align-self: start;
+}
+
+.edit-button {
+  padding: 6px;
+  font-weight: bold;
 }
 </style>

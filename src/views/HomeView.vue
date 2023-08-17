@@ -36,10 +36,8 @@
             />
             <img
               v-else
-              :src="
-                baseUrl + restaurant.attributes.image.data[0].attributes.url
-              "
-              :alt="restaurant.attributes.image.data[0].attributes.name"
+              :src="baseUrl + restaurant.attributes.image.data.attributes.url"
+              :alt="restaurant.attributes.image.data.attributes.name"
             />
           </div>
           <div class="text-container">
@@ -82,20 +80,24 @@ export default {
       baseUrl: process.env.VUE_APP_BASE_URL,
       restaurants: [],
       categories: [],
+      currentCategory: "all",
       pageSize: 6,
       numberOfPages: null,
       currentPage: 1,
     };
   },
   methods: {
+    // route to individual restaurant page
     handleRestaurantClick(value) {
       this.$router.push({ name: "restaurant", params: { id: value } });
     },
 
+    // display number of pages depending on category
     setNumberOfPages(restaurants) {
       this.numberOfPages = Math.ceil(restaurants.length / this.pageSize);
     },
 
+    // previous page button
     prevPage() {
       this.currentPage -= 1;
       if (this.currentPage <= 0) {
@@ -104,6 +106,7 @@ export default {
       this.setCurrentPage(this.currentPage);
     },
 
+    // next page button
     nextPage() {
       this.currentPage += 1;
       if (this.currentPage >= this.numberOfPages) {
@@ -112,30 +115,26 @@ export default {
       this.setCurrentPage(this.currentPage);
     },
 
+    // get current page data
     setCurrentPage(page) {
       this.currentPage = page;
-      this.getPageData();
+      this.getPageData(this.currentCategory);
     },
 
-    async handleCategoryClick(category) {
-      if (category == "all") {
+    // display restaurants based on category
+    handleCategoryClick(category) {
+      this.currentCategory = category;
+
+      if (this.currentCategory == "all") {
         this.currentPage = 1;
-        this.getPageData();
         this.getAllRestaurantsData();
-      } else {
-        const response = await axios({
-          method: "get",
-          url: `${this.apiUrl}/restaurants?filters[categories][name][$eqi]=${category}&populate=*`,
-        });
-
-        // populate category restaurants data
-        this.restaurants = response.data.data;
-
-        // get number of pages for this category
-        this.setNumberOfPages(this.restaurants);
       }
+      this.getPageData(this.currentCategory);
+
+      this.setNumberOfPages(this.restaurants);
     },
 
+    // get data for each category
     async getCategoryData() {
       try {
         const response = await axios({
@@ -148,29 +147,39 @@ export default {
       }
     },
 
+    // get all restaurants data
     async getAllRestaurantsData() {
       try {
         const response = await axios({
           method: "get",
           url: `${this.apiUrl}/restaurants?populate=*`,
         });
-
-        // get total number of pages
+        // get total number of pages for all restaurants
         this.setNumberOfPages(response.data.data);
       } catch (error) {
         console.log(error);
       }
     },
 
-    async getPageData() {
+    // get data for a single page
+    async getPageData(category) {
       try {
-        const response = await axios({
-          method: "get",
-          url: `${this.apiUrl}/restaurants?pagination[page]=${this.currentPage}&pagination[pageSize]=${this.pageSize}&populate=*`,
-        });
+        if (this.currentCategory == "all") {
+          const response = await axios({
+            method: "get",
+            url: `${this.apiUrl}/restaurants?pagination[page]=${this.currentPage}&pagination[pageSize]=${this.pageSize}&populate=*`,
+          });
+          // populate restaurants data for this page
+          this.restaurants = response.data.data;
+        } else {
+          const response = await axios({
+            method: "get",
+            url: `${this.apiUrl}/restaurants?filters[categories][name][$eqi]=${category}&pagination[pageSize]=${this.pageSize}&pagination[page]=${this.currentPage}&populate=*`,
+          });
 
-        // populate restaurants data for this page
-        this.restaurants = response.data.data;
+          // populate restaurants data for this page for this category
+          this.restaurants = response.data.data;
+        }
       } catch (error) {
         console.log(error);
       }
@@ -179,7 +188,7 @@ export default {
   mounted() {
     this.getAllRestaurantsData();
     this.getCategoryData();
-    this.getPageData();
+    this.getPageData(this.currentCategory);
   },
 };
 </script>

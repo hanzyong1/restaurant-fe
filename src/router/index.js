@@ -5,6 +5,7 @@ import AddCategoryView from "../views/AddCategoryView.vue";
 import AddRestaurantView from "../views/AddRestaurantView.vue";
 import LoginView from "../views/LoginView.vue";
 import RestaurantView from "../views/RestaurantView.vue";
+import EditRestaurantView from "../views/EditRestaurantView.vue";
 
 Vue.use(VueRouter);
 
@@ -23,6 +24,11 @@ const routes = [
     path: "/add-restaurant",
     name: "addRestaurant",
     component: AddRestaurantView,
+  },
+  {
+    path: "/edit-restaurant/:id",
+    name: "editRestaurantView",
+    component: EditRestaurantView,
   },
   {
     path: "/login",

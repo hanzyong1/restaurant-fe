@@ -45,6 +45,7 @@ export default {
     };
   },
   methods: {
+    // get all restaurants to allow for select
     async getRestaurantsData() {
       try {
         const response = await axios({
@@ -57,6 +58,7 @@ export default {
       }
     },
 
+    // add new category to backend
     async postCategoryData() {
       try {
         const response = await axios({
@@ -81,6 +83,7 @@ export default {
       }
     },
 
+    // reset input fields
     resetForm() {
       this.$refs.form.reset();
     },
