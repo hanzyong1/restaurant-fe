@@ -12,5 +12,8 @@ export default {
         Swal.fire("Oops!", "Please try again", "error");
       }
     };
+    Vue.prototype.$denyAccess = () => {
+      Swal.fire("Denied!", "You do not have permission to do this", "error");
+    };
   },
 };

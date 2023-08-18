@@ -76,7 +76,6 @@ import axios from "axios";
 export default {
   data() {
     return {
-      apiUrl: process.env.VUE_APP_API_URL,
       baseUrl: process.env.VUE_APP_BASE_URL,
       restaurants: [],
       categories: [],
@@ -139,7 +138,7 @@ export default {
       try {
         const response = await axios({
           method: "get",
-          url: `${this.apiUrl}/categories?populate[0]=name`,
+          url: `/categories?populate[0]=name`,
         });
         this.categories = response.data.data;
       } catch (error) {
@@ -152,7 +151,7 @@ export default {
       try {
         const response = await axios({
           method: "get",
-          url: `${this.apiUrl}/restaurants?populate=*`,
+          url: `/restaurants?populate=*`,
         });
         // get total number of pages for all restaurants
         this.setNumberOfPages(response.data.data);
@@ -167,14 +166,14 @@ export default {
         if (this.currentCategory == "all") {
           const response = await axios({
             method: "get",
-            url: `${this.apiUrl}/restaurants?pagination[page]=${this.currentPage}&pagination[pageSize]=${this.pageSize}&populate=*`,
+            url: `/restaurants?pagination[page]=${this.currentPage}&pagination[pageSize]=${this.pageSize}&populate=*`,
           });
           // populate restaurants data for this page
           this.restaurants = response.data.data;
         } else {
           const response = await axios({
             method: "get",
-            url: `${this.apiUrl}/restaurants?filters[categories][name][$eqi]=${category}&pagination[pageSize]=${this.pageSize}&pagination[page]=${this.currentPage}&populate=*`,
+            url: `/restaurants?filters[categories][name][$eqi]=${category}&pagination[pageSize]=${this.pageSize}&pagination[page]=${this.currentPage}&populate=*`,
           });
 
           // populate restaurants data for this page for this category
@@ -216,7 +215,6 @@ export default {
   flex-wrap: wrap;
   justify-content: center;
   gap: 50px;
-  padding-bottom: 50px;
 }
 
 .main > * {
@@ -276,10 +274,8 @@ img {
 .pagination-container {
   display: flex;
   align-items: center;
-  position: absolute;
-  bottom: 0;
-  justify-content: center;
-  margin: 10px;
+  justify-content: start;
+  padding: 10px;
 }
 .pagination-number,
 .pagination-button {

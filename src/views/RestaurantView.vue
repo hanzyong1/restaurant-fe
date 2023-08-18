@@ -74,7 +74,6 @@ export default {
   components: { BackButton },
   data() {
     return {
-      apiUrl: process.env.VUE_APP_API_URL,
       baseUrl: process.env.VUE_APP_BASE_URL,
       restaurantId: this.$route.params.id,
       name: "",
@@ -127,7 +126,7 @@ export default {
       try {
         const response = await axios({
           method: "get",
-          url: `${this.apiUrl}/restaurants/${this.restaurantId}?populate=*`,
+          url: `/restaurants/${this.restaurantId}?populate=*`,
         });
 
         const data = response.data.data;
@@ -165,6 +164,7 @@ export default {
   background-color: beige;
   min-height: 100dvh;
   text-align: left;
+  padding-bottom: 50px;
 }
 .restaurant {
   width: 90%;

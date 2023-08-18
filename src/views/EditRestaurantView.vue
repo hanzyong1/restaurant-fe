@@ -105,9 +105,9 @@
         <button type="submit">Submit</button>
       </div>
     </form>
-    <button class="delete-button" @click="responseStatusDelete(restaurantId)">
-      DELETE
-    </button>
+    <div class="delete-button">
+      <button @click="responseStatusDelete(restaurantId)">DELETE</button>
+    </div>
   </div>
 </template>
 
@@ -123,7 +123,6 @@ export default {
   data() {
     return {
       path: mdiDelete,
-      apiUrl: process.env.VUE_APP_API_URL,
       baseUrl: process.env.VUE_APP_BASE_URL,
       restaurantId: this.$route.params.id,
       name: "",
@@ -148,17 +147,20 @@ export default {
       try {
         const response = await axios({
           method: "delete",
-          url: `${this.apiUrl}/restaurants/${id}`,
+          url: `/restaurants/${id}`,
         });
+        console.log(response.request.status);
         if (response.request.status == 200) {
           Swal.fire("Deleted!", "Your file has been deleted.", "success");
+          this.$router.push({ name: "home" });
         }
       } catch (error) {
+        this.$denyAccess();
         console.log(error);
       }
     },
 
-    // sweetalert confirming delete
+    // sweetalert confirming delete when delete button is clicked
     responseStatusDelete(id) {
       Swal.fire({
         title: "Are you sure?",
@@ -171,18 +173,16 @@ export default {
       }).then((result) => {
         if (result.isConfirmed) {
           this.deleteRestaurant(id);
-          Swal.fire("Deleted!", "Your file has been deleted.", "success");
-          this.$router.push({ name: "home" });
         }
       });
     },
 
-    // send delete request to backend
+    // delete files in backend on submit
     async deleteFileRequest(id) {
       try {
         await axios({
           method: "delete",
-          url: `${this.apiUrl}/upload/files/${id}`,
+          url: `/upload/files/${id}`,
         });
       } catch (error) {
         console.log(error);
@@ -223,7 +223,7 @@ export default {
       try {
         const response = await axios({
           method: "get",
-          url: `${this.apiUrl}/categories?populate[0]=name`,
+          url: `/categories?populate[0]=name`,
         });
 
         this.categories = response.data.data;
@@ -237,7 +237,7 @@ export default {
       try {
         const response = await axios({
           method: "get",
-          url: `${this.apiUrl}/days?populate[0]=day`,
+          url: `/days?populate[0]=day`,
         });
 
         this.closingDays = response.data.data;
@@ -285,13 +285,14 @@ export default {
         // update restaurant info
         const response = await axios({
           method: "put",
-          url: `${this.apiUrl}/restaurants/${this.restaurantId}`,
+          url: `/restaurants/${this.restaurantId}`,
           data: fd,
         });
 
         this.$responseStatus(response.request.status);
       } catch (error) {
-        console.log(error.response.data);
+        this.$denyAccess();
+        console.log(error);
       }
     },
 
@@ -300,7 +301,7 @@ export default {
       try {
         const response = await axios({
           method: "get",
-          url: `${this.apiUrl}/restaurants/${this.restaurantId}?populate=*`,
+          url: `/restaurants/${this.restaurantId}?populate=*`,
         });
 
         const data = response.data.data;
@@ -464,9 +465,10 @@ button {
   margin: auto;
   display: flex;
   justify-content: center;
+  padding-bottom: 50px;
 }
 
-.delete-button:hover {
+.delete-button button:hover {
   background-color: red;
 }
 </style>

@@ -2,17 +2,23 @@
   <div class="page">
     <BackButton />
     <div class="login">
-      <h1>LOGIN</h1>
-      <form ref="form" v-on:submit.prevent="">
+      <h1>Login</h1>
+      <form ref="form" v-on:submit.prevent="loginRequest">
         <label for="username">Username:</label>
-        <input type="text" id="username" v-model="username" />
+        <input type="text" id="username" v-model="username" required />
+
+        <label for="email">Email:</label>
+        <input type="text" id="email" v-model="email" required />
 
         <label for="password">Password:</label>
-        <input type="text" id="password" v-model="password" />
+        <input type="password" id="password" v-model="password" minlength="6" />
 
         <div class="buttons">
           <button @click="resetForm">Reset</button>
           <button type="submit">Submit</button>
+        </div>
+        <div class="logout-button">
+          <button @click="logoutRequest">Logout</button>
         </div>
       </form>
     </div>
@@ -21,18 +27,46 @@
 
 <script>
 import BackButton from "@/components/BackButton.vue";
+import axios from "axios";
+import Swal from "sweetalert2";
 
 export default {
   components: { BackButton },
   data() {
     return {
       username: "",
+      email: "",
       password: "",
     };
   },
   methods: {
+    // reset form input fields
     resetForm() {
       this.$refs.form.reset();
+    },
+
+    // login authorization
+    async loginRequest() {
+      try {
+        const response = await axios({
+          method: "post",
+          url: `/auth/local`,
+          data: {
+            identifier: this.username,
+            password: this.password,
+          },
+        });
+        localStorage.setItem("token", response.data.jwt);
+        Swal.fire("Success!", "You have logged in", "success");
+        this.$router.push({ name: "home" });
+      } catch (error) {
+        Swal.fire("Denied!", "Incorrect login credentials", "error");
+      }
+    },
+
+    logoutRequest() {
+      localStorage.removeItem("token");
+      this.$router.push({ name: "home" });
     },
   },
 };
@@ -81,10 +115,18 @@ label {
   justify-content: center;
   align-items: center;
   gap: 50px;
+  margin-bottom: 50px;
 }
 
 button {
   padding: 10px;
   font-weight: bold;
+}
+.logout-button {
+  margin: auto;
+}
+
+.logout-button button:hover {
+  background-color: red;
 }
 </style>

@@ -117,7 +117,6 @@ export default {
   data() {
     return {
       path: mdiDelete,
-      apiUrl: process.env.VUE_APP_API_URL,
       baseUrl: process.env.VUE_APP_BASE_URL,
       name: "",
       description: "",
@@ -164,7 +163,7 @@ export default {
       try {
         const response = await axios({
           method: "get",
-          url: `${this.apiUrl}/categories?populate[0]=name`,
+          url: `/categories?populate[0]=name`,
         });
 
         this.categories = response.data.data;
@@ -178,7 +177,7 @@ export default {
       try {
         const response = await axios({
           method: "get",
-          url: `${this.apiUrl}/days?populate[0]=day`,
+          url: `/days?populate[0]=day`,
         });
 
         this.closingDays = response.data.data;
@@ -192,7 +191,7 @@ export default {
       this.$refs.form.reset();
     },
 
-    // create new restaurant entry in backend
+    // create new restaurant entry to backend
     async postRestaurantData() {
       try {
         const fd = new FormData();
@@ -221,13 +220,14 @@ export default {
 
         const response = await axios({
           method: "post",
-          url: `${this.apiUrl}/restaurants`,
+          url: `/restaurants`,
           data: fd,
         });
 
         this.$responseStatus(response.request.status);
       } catch (error) {
-        console.log(error.response.data);
+        this.$denyAccess();
+        console.log(error);
       }
     },
   },
@@ -341,6 +341,7 @@ p {
   justify-content: center;
   align-items: center;
   gap: 50px;
+  margin-bottom: 50px;
 }
 
 button {

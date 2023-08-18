@@ -38,7 +38,6 @@ export default {
   components: { BackButton },
   data() {
     return {
-      apiUrl: process.env.VUE_APP_API_URL,
       newCategory: "",
       restaurants: [],
       selectedRestaurantId: "",
@@ -50,7 +49,7 @@ export default {
       try {
         const response = await axios({
           method: "get",
-          url: `${this.apiUrl}/restaurants?fields[0]=name`,
+          url: `/restaurants?fields[0]=name`,
         });
         this.restaurants = response.data.data;
       } catch (error) {
@@ -63,7 +62,7 @@ export default {
       try {
         const response = await axios({
           method: "post",
-          url: `${this.apiUrl}/categories`,
+          url: `/categories`,
           data: {
             data: {
               name: this.newCategory,
@@ -78,8 +77,9 @@ export default {
           },
         });
         this.$responseStatus(response.request.status);
+        console.log(response);
       } catch (error) {
-        console.log(error);
+        this.$denyAccess();
       }
     },
 
