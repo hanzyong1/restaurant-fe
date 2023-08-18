@@ -149,9 +149,8 @@ export default {
           method: "delete",
           url: `/restaurants/${id}`,
         });
-        console.log(response.request.status);
         if (response.request.status == 200) {
-          Swal.fire("Deleted!", "Your file has been deleted.", "success");
+          await Swal.fire("Deleted!", "Your file has been deleted.", "success");
           this.$router.push({ name: "home" });
         }
       } catch (error) {

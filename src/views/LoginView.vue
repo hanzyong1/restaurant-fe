@@ -17,10 +17,10 @@
           <button @click="resetForm">Reset</button>
           <button type="submit">Submit</button>
         </div>
-        <div class="logout-button">
-          <button @click="logoutRequest">Logout</button>
-        </div>
       </form>
+    </div>
+    <div class="logout-button">
+      <button @click="logoutRequest">Logout</button>
     </div>
   </div>
 </template>
@@ -57,15 +57,16 @@ export default {
           },
         });
         localStorage.setItem("token", response.data.jwt);
-        Swal.fire("Success!", "You have logged in", "success");
+        await Swal.fire("Success!", "You have logged in", "success");
         this.$router.push({ name: "home" });
       } catch (error) {
         Swal.fire("Denied!", "Incorrect login credentials", "error");
       }
     },
 
-    logoutRequest() {
+    async logoutRequest() {
       localStorage.removeItem("token");
+      await Swal.fire("Success!", "You have logged out", "success");
       this.$router.push({ name: "home" });
     },
   },
@@ -123,7 +124,9 @@ button {
   font-weight: bold;
 }
 .logout-button {
-  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .logout-button button:hover {

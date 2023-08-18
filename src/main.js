@@ -24,7 +24,7 @@ axios.interceptors.request.use(
   }
 );
 
-// Plugin
+// Plugins
 Vue.use($responseStatus);
 Vue.use($denyAccess);
 
