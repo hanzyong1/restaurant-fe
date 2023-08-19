@@ -117,7 +117,7 @@ form,
 .select {
   display: flex;
   flex-direction: column;
-  align-items: start;
+  align-items: flex-start;
   justify-content: center;
   width: 500px;
 }

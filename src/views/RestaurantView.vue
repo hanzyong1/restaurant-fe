@@ -252,7 +252,7 @@ export default {
 }
 
 .edit-button-container {
-  align-self: start;
+  align-self: flex-start;
 }
 
 .edit-button {

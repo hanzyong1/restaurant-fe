@@ -260,7 +260,7 @@ img {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  align-items: start;
+  align-items: flex-start;
   text-align: start;
 }
 .text-container * {
@@ -274,7 +274,7 @@ img {
 .pagination-container {
   display: flex;
   align-items: center;
-  justify-content: start;
+  justify-content: flex-start;
   padding: 10px;
 }
 .pagination-number,

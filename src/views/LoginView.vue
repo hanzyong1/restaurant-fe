@@ -20,6 +20,8 @@
       </form>
     </div>
     <div class="logout-button">
+      <p v-if="token">You are logged in!</p>
+      <p v-else>You are not logged in</p>
       <button @click="logoutRequest">Logout</button>
     </div>
   </div>
@@ -37,6 +39,7 @@ export default {
       username: "",
       email: "",
       password: "",
+      token: localStorage.getItem("token"),
     };
   },
   methods: {
@@ -95,7 +98,7 @@ h1 {
 form {
   display: flex;
   flex-direction: column;
-  align-items: start;
+  align-items: flex-start;
   justify-content: center;
   width: 500px;
 }
@@ -125,8 +128,14 @@ button {
 }
 .logout-button {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 30px;
+}
+
+.logout-button p {
+  font-weight: bold;
 }
 
 .logout-button button:hover {
