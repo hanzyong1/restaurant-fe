@@ -1,7 +1,7 @@
 <template>
   <div class="modal-backdrop">
     <div class="modal">
-      <header class="modal-header" id="modalTitle">
+      <header class="modal-header">
         <button class="btn-close" @click="close">X</button>
       </header>
       <div class="modal-body">
