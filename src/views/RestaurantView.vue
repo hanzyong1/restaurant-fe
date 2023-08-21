@@ -57,7 +57,7 @@
           </div>
         </div>
       </div>
-      <div class="edit-button-container">
+      <div v-if="isAuthenticated" class="edit-button-container">
         <button class="edit-button" @click="navigateToEdit(restaurantId)">
           Edit
         </button>
@@ -87,6 +87,7 @@ export default {
       timer: null,
       currentIndex: 0,
       imgUrl: [],
+      isAuthenticated: localStorage.getItem("token"),
     };
   },
   methods: {
@@ -149,7 +150,7 @@ export default {
 
     // edit button
     navigateToEdit(value) {
-      this.$router.push({ name: "editRestaurantView", params: { id: value } });
+      this.$router.push({ name: "editRestaurant", params: { id: value } });
     },
   },
   mounted() {

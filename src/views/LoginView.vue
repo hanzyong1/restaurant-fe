@@ -19,11 +19,6 @@
         </div>
       </form>
     </div>
-    <div class="logout-button">
-      <p v-if="token">You are logged in!</p>
-      <p v-else>You are not logged in</p>
-      <button @click="logoutRequest">Logout</button>
-    </div>
   </div>
 </template>
 
@@ -65,12 +60,6 @@ export default {
       } catch (error) {
         Swal.fire("Denied!", "Incorrect login credentials", "error");
       }
-    },
-
-    async logoutRequest() {
-      localStorage.removeItem("token");
-      await Swal.fire("Success!", "You have logged out", "success");
-      this.$router.push({ name: "home" });
     },
   },
 };
@@ -125,20 +114,5 @@ label {
 button {
   padding: 10px;
   font-weight: bold;
-}
-.logout-button {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 30px;
-}
-
-.logout-button p {
-  font-weight: bold;
-}
-
-.logout-button button:hover {
-  background-color: red;
 }
 </style>

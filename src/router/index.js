@@ -27,7 +27,7 @@ const routes = [
   },
   {
     path: "/edit-restaurant/:id",
-    name: "editRestaurantView",
+    name: "editRestaurant",
     component: EditRestaurantView,
   },
   {
@@ -46,6 +46,21 @@ const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes,
+});
+
+// Navigation guard
+router.beforeEach((to, from, next) => {
+  let isAuthenticated = localStorage.getItem("token");
+  if (
+    !isAuthenticated &&
+    (to.name === "addCategory" ||
+      to.name === "addRestaurant" ||
+      to.name === "editRestaurant")
+  ) {
+    next({ name: "home" });
+  } else {
+    next();
+  }
 });
 
 export default router;

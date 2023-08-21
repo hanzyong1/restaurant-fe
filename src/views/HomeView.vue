@@ -1,12 +1,23 @@
 <template>
   <div class="page">
     <nav>
-      <router-link :to="{ name: 'home' }">Home</router-link> |
-      <router-link :to="{ name: 'addCategory' }">Add Category</router-link> |
-      <router-link :to="{ name: 'addRestaurant' }">Add Restaurant</router-link>
-      |
-      <router-link :to="{ name: 'login' }">Login</router-link>
+      <router-link :to="{ name: 'home' }">Home </router-link>
+      <router-link v-if="isAuthenticated" :to="{ name: 'addCategory' }"
+        >| Add Category
+      </router-link>
+
+      <router-link v-if="isAuthenticated" :to="{ name: 'addRestaurant' }"
+        >| Add Restaurant
+      </router-link>
+
+      <router-link v-if="!isAuthenticated" :to="{ name: 'login' }"
+        >| Login</router-link
+      >
     </nav>
+
+    <div v-if="isAuthenticated" class="logout-button">
+      <button @click="logoutRequest">Logout</button>
+    </div>
 
     <h1>RESTAURANTS</h1>
 
@@ -45,7 +56,7 @@
               {{ restaurant.attributes.name }}
             </div>
             <div class="description">
-              {{ restaurant.attributes.description }}
+              {{ restaurant.attributes.description | truncate }}
             </div>
           </div>
         </div>
@@ -72,6 +83,7 @@
 
 <script>
 import axios from "axios";
+import Swal from "sweetalert2";
 
 export default {
   data() {
@@ -83,9 +95,17 @@ export default {
       pageSize: 6,
       numberOfPages: null,
       currentPage: 1,
+      isAuthenticated: localStorage.getItem("token"),
     };
   },
   methods: {
+    // logout
+    async logoutRequest() {
+      localStorage.removeItem("token");
+      await Swal.fire("Success!", "You have logged out", "success");
+      this.$router.go();
+    },
+
     // route to individual restaurant page
     handleRestaurantClick(value) {
       this.$router.push({ name: "restaurant", params: { id: value } });
@@ -223,7 +243,24 @@ export default {
 
 nav {
   text-align: left;
-  margin-bottom: 20px;
+}
+
+.logout-button {
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 20px;
+}
+
+.logout-button button {
+  padding: 10px;
+  font-weight: bold;
+  border: red 0.5px solid;
+  border-radius: 8px;
+}
+
+.logout-button button:hover {
+  cursor: pointer;
+  background-color: crimson;
 }
 
 h1 {

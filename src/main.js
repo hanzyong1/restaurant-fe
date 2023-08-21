@@ -33,6 +33,10 @@ Vue.filter("capitalize", function (string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 });
 
+Vue.filter("truncate", function (string) {
+  return string.substr(0, 100) + "...";
+});
+
 new Vue({
   router,
   render: (h) => h(App),
