@@ -34,7 +34,6 @@ export default {
       username: "",
       email: "",
       password: "",
-      token: localStorage.getItem("token"),
     };
   },
   methods: {

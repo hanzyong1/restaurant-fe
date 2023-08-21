@@ -7,7 +7,7 @@
           v-if="imgUrl[currentIndex] == null"
           src="../assets/Image_not_available.png"
         />
-        <img v-else :src="imgUrl[currentIndex]" />
+        <img @click="toggleModal" v-else :src="imgUrl[currentIndex]" />
         <a class="prev" @click="previous">&#10094;</a>
         <a class="next" @click="next">&#10095;</a>
       </div>
@@ -63,15 +63,22 @@
         </button>
       </div>
     </div>
+    <AppModal
+      v-if="showModal"
+      @close="showModal = !showModal"
+      :imgUrl="imgUrl"
+      :selectedIndex="selectedIndex"
+    />
   </div>
 </template>
 
 <script>
 import axios from "axios";
 import BackButton from "@/components/BackButton.vue";
+import AppModal from "@/components/AppModal.vue";
 
 export default {
-  components: { BackButton },
+  components: { BackButton, AppModal },
   data() {
     return {
       baseUrl: process.env.VUE_APP_BASE_URL,
@@ -88,9 +95,17 @@ export default {
       currentIndex: 0,
       imgUrl: [],
       isAuthenticated: localStorage.getItem("token"),
+      showModal: false,
+      selectedIndex: 0,
     };
   },
   methods: {
+    // toggle to show modal
+    toggleModal() {
+      this.showModal = !this.showModal;
+      this.selectedIndex = this.currentIndex;
+    },
+
     // image slider next button
     next() {
       if (this.currentIndex >= this.imgUrl.length - 1) {
