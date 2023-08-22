@@ -22,10 +22,16 @@
     <h1>RESTAURANTS</h1>
 
     <div class="category-buttons">
-      <button @click="handleCategoryClick('all')">All</button>
+      <button
+        @click="handleCategoryClick('all')"
+        :class="{ active: currentCategory == 'all' }"
+      >
+        All
+      </button>
       <button
         v-for="category in categories"
         :key="category.id"
+        :class="{ active: currentCategory == category.attributes.name }"
         @click="handleCategoryClick(category.attributes.name)"
       >
         {{ category.attributes.name | capitalize }}
@@ -147,6 +153,7 @@ export default {
 
       if (this.currentCategory == "all") {
         this.getAllRestaurantsData();
+        this.currentCategory = "all";
       }
       this.getPageData(this.currentCategory);
 
@@ -228,6 +235,10 @@ export default {
 .category-buttons button {
   padding: 6px 8px;
   font-weight: bold;
+}
+
+.active {
+  background-color: khaki;
 }
 
 .main {

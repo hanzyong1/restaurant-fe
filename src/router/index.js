@@ -6,6 +6,7 @@ import AddRestaurantView from "../views/AddRestaurantView.vue";
 import LoginView from "../views/LoginView.vue";
 import RestaurantView from "../views/RestaurantView.vue";
 import EditRestaurantView from "../views/EditRestaurantView.vue";
+import Swal from "sweetalert2";
 
 Vue.use(VueRouter);
 
@@ -57,6 +58,7 @@ router.beforeEach((to, from, next) => {
       to.name === "addRestaurant" ||
       to.name === "editRestaurant")
   ) {
+    Swal.fire("Denied", "Please log in!", "error");
     next({ name: "home" });
   } else {
     next();
